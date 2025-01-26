@@ -74,16 +74,6 @@ def git_commit():
     subprocess.run(["git", "commit", "-m", commit_message])
 
 def git_push():
-    # Use the environment variable for authentication
-    token = os.getenv("GITHUB_TOKEN")
-    if not token:
-        print("Error: GITHUB_TOKEN environment variable not set.")
-        return
-
-    # Update the remote URL to include the token
-    remote_url = f"https://{token}@github.com/IJMadalenA/pythonist.git"
-    subprocess.run(["git", "remote", "set-url", "origin", remote_url])
-
     # Push the committed changes to GitHub
     result = subprocess.run(["git", "push"], capture_output=True, text=True)
     if result.returncode == 0:
