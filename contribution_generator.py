@@ -1,35 +1,61 @@
 import os
 import random
 import subprocess
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+import csv
+from datetime import datetime, timedelta
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
 def validate_file():
-    if not os.path.exists("number.txt"):
-        with open("number.txt", "w") as f:
-            f.write("0")
-            f.close()
+    if not os.path.exists("contributions.csv"):
+        with open("contributions.csv", "w", newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(["date", "contributions", "daily_limit"])
 
 def read_number():
     print("Reading number from file...")
     validate_file()
-    with open("number.txt", "r") as f:
-        return int(f.read().strip())
+    today = datetime.now().strftime("%Y-%m-%d")
+    with open("contributions.csv", "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["date"] == today:
+                return int(row["contributions"])
+    return 0
 
 def write_number(num):
     print("Writing number to file...")
     validate_file()
-    with open("number.txt", "w") as f:
-        f.write("0")
-        f.close()
+    today = datetime.now().strftime("%Y-%m-%d")
+    rows = []
+    updated = False
+    with open("contributions.csv", "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["date"] == today:
+                row["contributions"] = num
+                updated = True
+            rows.append(row)
+    if not updated:
+        rows.append({"date": today, "contributions": num, "daily_limit": random.randint(3, 12)})
+    with open("contributions.csv", "w", newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=["date", "contributions", "daily_limit"])
+        writer.writeheader()
+        writer.writerows(rows)
 
-    with open("number.txt", "w") as f:
-        f.write(str(num))
+def get_daily_limit():
+    validate_file()
+    today = datetime.now().strftime("%Y-%m-%d")
+    with open("contributions.csv", "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["date"] == today:
+                return int(row["daily_limit"])
+    return random.randint(3, 12)
+
+def should_execute():
+    return random.random() < 0.5
 
 def generate_random_commit_message():
     print("Generating random commit message...")
@@ -83,12 +109,23 @@ def git_push():
         print(result.stderr)
 
 def update_cron_with_random_time():
-    # Generate random hour (0-23) and minute (0-59)
-    random_hour = random.randint(0, 23)
-    random_minute = random.randint(0, 59)
+    current_number = read_number()
+    daily_limit = get_daily_limit()
+
+    if current_number >= daily_limit:
+        print("Daily limit reached. No more contributions will be made today.")
+        return
+
+    if not should_execute():
+        print("Skipping execution based on random chance.")
+        return
+
+    # Generate random minute (0-59) within the range of 15 to 45 minutes
+    random_minute = random.randint(15, 45)
+    next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
 
     # Define the new cron job command
-    new_cron_command = f"{random_minute} {random_hour} * * * cd {script_dir} && python3 {os.path.join(script_dir, 'update_number.py')}\n"
+    new_cron_command = f"{next_run_time} cd {script_dir} && python3 {os.path.join(script_dir, 'contribution_generator.py')}\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
@@ -102,8 +139,8 @@ def update_cron_with_random_time():
 
     with open(cron_file, "w") as file:
         for line in lines:
-            # Remove existing entry for `update_number.py` if it exists
-            if "update_number.py" not in line:
+            # Remove existing entry for `contribution_generator.py` if it exists
+            if "contribution_generator.py" not in line:
                 file.write(line)
         # Add the new cron job at the random time
         file.write(new_cron_command)
@@ -112,11 +149,21 @@ def update_cron_with_random_time():
     os.system(f"crontab {cron_file}")
     os.remove(cron_file)
 
-    print(f"Cron job updated to run at {random_hour}:{random_minute} tomorrow.")
+    print(f"Cron job updated to run every {random_minute} minutes.")
 
 def main():
     try:
         current_number = read_number()
+        daily_limit = get_daily_limit()
+
+        if current_number >= daily_limit:
+            print("Daily limit reached. No more contributions will be made today.")
+            return
+
+        if not should_execute():
+            print("Skipping execution based on random chance.")
+            return
+
         new_number = current_number + 1
         write_number(new_number)
         git_commit()
