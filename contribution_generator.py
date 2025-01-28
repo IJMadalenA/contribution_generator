@@ -55,7 +55,7 @@ def get_daily_limit():
     return random.randint(3, 12)
 
 def should_execute():
-    return random.random() < 0.5
+    return random.random() < 0.65
 
 def generate_random_commit_message():
     print("Generating random commit message...")
@@ -95,7 +95,7 @@ def generate_random_commit_message():
 def git_commit():
     # Stage the changes
     print("Staging changes...")
-    subprocess.run(["git", "add", "number.txt"])
+    subprocess.run(["git", "add", "."])
     commit_message = generate_random_commit_message()
     subprocess.run(["git", "commit", "-m", commit_message])
 
