@@ -125,7 +125,7 @@ def update_cron_with_random_time():
     next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
 
     # Define the new cron job command
-    new_cron_command = f"{next_run_time} cd {script_dir} && python3 {os.path.join(script_dir, 'contribution_generator.py')}\n"
+    new_cron_command = f"{next_run_time} python3 {os.path.join(script_dir, 'contribution_generator.py')}\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
