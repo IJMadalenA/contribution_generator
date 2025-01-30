@@ -55,7 +55,7 @@ def should_execute():
     return random.random() < 0.65
 
 def generate_random_commit_message():
-    print("Generating random commit message...")
+    print("4 - Generating random commit message...")
     from transformers import pipeline
 
     generator = pipeline(
@@ -166,7 +166,8 @@ def main():
             return
 
         if not should_execute():
-            print("Skipping execution based on random chance.")
+            print("2 - Skipping execution based on random chance.")
+            print("EXIT.")
             return
 
         new_number = current_number + 1
