@@ -4,9 +4,6 @@ import subprocess
 import csv
 from datetime import datetime, timedelta
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-os.chdir(script_dir)
-
 def validate_file():
     if not os.path.exists("contributions.csv"):
         with open("contributions.csv", "w", newline='') as f:
@@ -124,8 +121,16 @@ def update_cron_with_random_time():
     random_minute = random.randint(15, 45)
     next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
 
+    python_path = subprocess.run(["which", "python3"], capture_output=True, text=True).stdout.strip()
+
     # Define the new cron job command
-    new_cron_command = f"{next_run_time} python3 {os.path.join(script_dir, 'contribution_generator.py')}\n"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+
+    log_file = os.path.join(script_dir, 'cronjob.log')
+
+    # Define the new cron job command.
+    new_cron_command = f"{next_run_time} {python_path} {script_dir} >> {log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
