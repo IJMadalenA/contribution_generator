@@ -11,7 +11,7 @@ def validate_file():
             writer.writerow(["date", "contributions", "daily_limit"])
 
 def read_number():
-    print("Reading number from file...")
+    print("1 - Reading number from file...")
     validate_file()
     today = datetime.now().strftime("%Y-%m-%d")
     with open("contributions.csv", "r") as f:
@@ -22,7 +22,7 @@ def read_number():
     return 0
 
 def write_number(num):
-    print("Writing number to file...")
+    print("2 - Writing number to file...")
     validate_file()
     today = datetime.now().strftime("%Y-%m-%d")
     rows = []
@@ -91,7 +91,7 @@ def generate_random_commit_message():
 
 def git_commit():
     # Stage the changes
-    print("Staging changes...")
+    print("3 - Staging changes...")
     subprocess.run(["git", "add", "."])
     commit_message = generate_random_commit_message()
     subprocess.run(["git", "commit", "-m", commit_message])
@@ -114,7 +114,7 @@ def update_cron_with_random_time():
         return
 
     if not should_execute():
-        print("Skipping execution based on random chance.")
+        print("4 - Skipping execution based on random chance.")
         return
 
     # Generate random minute (0-59) within the range of 15 to 45 minutes
