@@ -100,7 +100,7 @@ def git_push():
     # Push the committed changes to GitHub
     result = subprocess.run(["git", "push"], capture_output=True, text=True)
     if result.returncode == 0:
-        print("Changes pushed to GitHub successfully.")
+        print("5 - Changes pushed to GitHub successfully.")
     else:
         print("Error pushing to GitHub:")
         print(result.stderr)
