@@ -130,7 +130,7 @@ def update_cron_with_random_time():
     log_file = os.path.join(script_dir, 'cronjob.log')
 
     # Define the new cron job command.
-    new_cron_command = f"{next_run_time} {python_path} {script_dir/"contribution_generator.py"} >> {log_file} 2>&1\n"
+    new_cron_command = f"{next_run_time} {python_path} {script_dir+"/contribution_generator.py"} >> {log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
