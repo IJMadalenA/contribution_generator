@@ -125,12 +125,11 @@ def update_cron_with_random_time():
 
     # Define the new cron job command
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(script_dir)
-
+    script_path = os.path.join(script_dir, 'contribution_generator.py')
     log_file = os.path.join(script_dir, 'cronjob.log')
 
-    # Define the new cron job command.
-    new_cron_command = f"{next_run_time} {python_path} {script_dir+"/contribution_generator.py"} >> {log_file} 2>&1\n"
+    # Define the new cron job command with the correct working directory
+    new_cron_command = f"{next_run_time} {python_path} {script_path} >> {log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
@@ -155,7 +154,6 @@ def update_cron_with_random_time():
     os.remove(cron_file)
 
     print(f"Cron job updated to run every {random_minute} minutes.")
-
 def main():
     try:
         current_number = read_number()
