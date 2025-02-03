@@ -179,12 +179,11 @@ def update_cron_with_random_time():
 
     # Define the new cron job command
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    git_repo_dir = "/path/to/your/git/repository"  # Update this path to your Git repository
     script_path = os.path.join(script_dir, 'contribution_generator.py')
     log_file = os.path.join(script_dir, 'cronjob.log')
 
     # Define the new cron job command with the correct working directory
-    new_cron_command = f"{next_run_time} cd {git_repo_dir} && {python_path} {script_path} >> {datetime.now(), log_file} 2>&1\n"
+    new_cron_command = f"{next_run_time} cd {script_dir} && {python_path} {script_path} >> {datetime.now(), log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
@@ -222,6 +221,7 @@ def main():
         current_number = read_number()
         daily_limit = get_daily_limit()
 
+        # Check if the daily limit has been reached.
         if current_number >= daily_limit:
             print("Daily limit reached. No more contributions will be made today.")
             return
