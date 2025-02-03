@@ -172,6 +172,9 @@ def update_cron_with_random_time():
     random_minute = random.randint(15, 45)
     next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
 
+    if next_run_time[0] == "0":
+        next_run_time = next_run_time[1:]
+
     python_path = subprocess.run(["which", "python3"], capture_output=True, text=True).stdout.strip()
 
     # Define the new cron job command
@@ -181,7 +184,7 @@ def update_cron_with_random_time():
     log_file = os.path.join(script_dir, 'cronjob.log')
 
     # Define the new cron job command with the correct working directory
-    new_cron_command = f"cd {git_repo_dir} && {python_path} {script_path} >> {datetime.now(), log_file} 2>&1\n"
+    new_cron_command = f"{next_run_time} cd {git_repo_dir} && {python_path} {script_path} >> {datetime.now(), log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
