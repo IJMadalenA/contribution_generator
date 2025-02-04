@@ -218,9 +218,6 @@ def main():
         # Change to the directory of the script.
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-        # Activate the virtual environment.
-        subprocess.run(["source", "venv/bin/activate"], shell=True)
-
         current_number = read_number()
         daily_limit = get_daily_limit()
 
