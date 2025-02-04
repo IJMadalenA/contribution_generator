@@ -172,9 +172,6 @@ def update_cron_with_random_time():
     random_minute = random.randint(15, 45)
     next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
 
-    if next_run_time[0] == "0":
-        next_run_time = next_run_time[1:]
-
     python_path = subprocess.run(["which", "python3"], capture_output=True, text=True).stdout.strip()
 
     # Define the new cron job command
@@ -183,7 +180,7 @@ def update_cron_with_random_time():
     log_file = os.path.join(script_dir, 'cronjob.log')
 
     # Define the new cron job command with the correct working directory
-    new_cron_command = f"{next_run_time} {script_path} >> {log_file} 2>&1\n"
+    new_cron_command = f"{next_run_time} {python_path} {script_path} >> {log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
@@ -220,6 +217,9 @@ def main():
     try:
         # Change to the directory of the script.
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+        # Activate the virtual environment.
+        subprocess.run(["source", "venv/bin/activate"], shell=True)
 
         current_number = read_number()
         daily_limit = get_daily_limit()
