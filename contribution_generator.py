@@ -4,6 +4,8 @@ import subprocess
 import csv
 from datetime import datetime, timedelta
 
+today = datetime.now().strftime("%Y-%m-%d")
+
 def validate_file():
     """
     Ensures that the 'contributions.csv' file exists.
@@ -24,7 +26,6 @@ def read_number():
     """
     print("1 - Reading number from file...")
     validate_file()
-    today = datetime.now().strftime("%Y-%m-%d")
     with open("contributions.csv", "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -43,7 +44,6 @@ def write_number(num):
     """
     print("2 - Writing number to file...")
     validate_file()
-    today = datetime.now().strftime("%Y-%m-%d")
     rows = []
     updated = False
     with open("contributions.csv", "r") as f:
@@ -69,7 +69,6 @@ def get_daily_limit():
         int: The daily contribution limit.
     """
     validate_file()
-    today = datetime.now().strftime("%Y-%m-%d")
     with open("contributions.csv", "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -89,7 +88,7 @@ def should_execute():
 def generate_random_commit_message():
     """
     Generates a random commit message following the Conventional Commits standard
-    using a pre-trained GPT-2 model from the transformers library.
+    using a pre-trained GPT-2 model from the transformers' library.
 
     Returns:
         str: The generated commit message.
@@ -157,16 +156,6 @@ def update_cron_with_random_time():
     Updates the cron job to run the script at a random time within the next 15 to 45 minutes.
     Ensures the script is executed within the correct directory and updates the crontab accordingly.
     """
-    current_number = read_number()
-    daily_limit = get_daily_limit()
-
-    if current_number >= daily_limit:
-        print("Daily limit reached. No more contributions will be made today.")
-        return
-
-    if not should_execute():
-        print("4 - Skipping execution based on random chance.")
-        return
 
     # Generate random minute (0-59) within the range of 15 to 45 minutes
     random_minute = random.randint(15, 45)
@@ -215,6 +204,11 @@ def main():
     commits and pushes the changes, and updates the cron job.
     """
     try:
+        if not should_execute():
+            print("\n 1 - Skipping execution based on random chance.")
+            print("EXIT.")
+            return
+        
         # Change to the directory of the script.
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -224,11 +218,6 @@ def main():
         # Check if the daily limit has been reached.
         if current_number >= daily_limit:
             print("Daily limit reached. No more contributions will be made today.")
-            return
-
-        if not should_execute():
-            print("2 - Skipping execution based on random chance.")
-            print("EXIT.")
             return
 
         new_number = current_number + 1
