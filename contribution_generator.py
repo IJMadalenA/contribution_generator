@@ -160,6 +160,10 @@ def update_cron_with_random_time():
     # Generate random minute (0-59) within the range of 15 to 45 minutes
     random_minute = random.randint(15, 45)
     next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
+    
+    # Remove leading zero if present.
+    if next_run_time[0] == "0":
+        next_run_time = next_run_time[1:]
 
     python_path = subprocess.run(["which", "python3"], capture_output=True, text=True).stdout.strip()
 
@@ -208,7 +212,7 @@ def main():
             print("\n 1 - Skipping execution based on random chance.")
             print("EXIT.")
             return
-        
+
         # Change to the directory of the script.
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
