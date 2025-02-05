@@ -178,9 +178,10 @@ def update_cron_with_random_time():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     script_path = os.path.join(script_dir, 'contribution_generator.py')
     log_file = os.path.join(script_dir, 'cronjob.log')
+    venv_activate = os.path.join(script_dir, '.venv', 'bin', 'activate')
 
-    # Define the new cron job command with the correct working directory
-    new_cron_command = f"{next_run_time} {python_path} {script_path} >> {log_file} 2>&1\n"
+    # Define the new cron job command with the correct working directory and virtual environment activation
+    new_cron_command = f"{next_run_time} source {venv_activate} && {python_path} {script_path} >> {log_file} 2>&1\n"
 
     # Get the current crontab
     cron_file = "/tmp/current_cron"
@@ -205,7 +206,6 @@ def update_cron_with_random_time():
     os.remove(cron_file)
 
     print(f"Cron job updated to run every {random_minute} minutes.")
-
 
 def main():
     """
