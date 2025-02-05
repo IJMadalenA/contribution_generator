@@ -160,7 +160,7 @@ def update_cron_with_random_time():
     # Generate random minute (0-59) within the range of 15 to 45 minutes
     random_minute = random.randint(15, 45)
     next_run_time = (datetime.now() + timedelta(minutes=random_minute)).strftime("%M * * * *")
-    
+
     # Remove leading zero if present.
     if next_run_time[0] == "0":
         next_run_time = next_run_time[1:]
@@ -208,8 +208,9 @@ def main():
     commits and pushes the changes, and updates the cron job.
     """
     try:
+        print(f"\n {datetime.now()} - Starting contribution process...")
         if not should_execute():
-            print("\n 1 - Skipping execution based on random chance.")
+            print("1 - Skipping execution based on random chance.")
             print("EXIT.")
             return
 
@@ -221,7 +222,7 @@ def main():
 
         # Check if the daily limit has been reached.
         if current_number >= daily_limit:
-            print("Daily limit reached. No more contributions will be made today.")
+            print("1 - Daily limit reached. No more contributions will be made today.")
             return
 
         new_number = current_number + 1
