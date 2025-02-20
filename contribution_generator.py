@@ -54,7 +54,7 @@ def write_number(num):
                 updated = True
             rows.append(row)
     if not updated:
-        rows.append({"date": today, "contributions": num, "daily_limit": random.randint(3, 12)})
+        rows.append({"date": today, "contributions": num, "daily_limit": random.randint(1, 12)})
     with open("contributions.csv", "w", newline='') as f:
         writer = csv.DictWriter(f, fieldnames=["date", "contributions", "daily_limit"])
         writer.writeheader()
